@@ -1,4 +1,4 @@
-# an implementation of the llama 2 from scratch and train it using reinforcement learning from human feedback 
+# an implementation of the llama 2 from scratch and fine-tuning it using reinforcement learning from human feedback 
 from dataclasses import dataclass 
 import math     
 import torch   
