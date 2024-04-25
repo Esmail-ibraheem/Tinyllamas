@@ -7,7 +7,7 @@
 - [[#Llama2 model]]   
 - [[#RLHF]]:   
 	- Proximal Policy Optimization algorithm
-	- Direct Preference Optimization algorithm
+	- Direct Preference Optimization algorithm 
 	- Supervised Fine-tuning  
 
 ---
