@@ -4,7 +4,7 @@
 - [[#Transformers]]:  
 	- [[#^bd33fb ]] 
 	- [[#^20bbbe]] 
-- [[#Llama2 model]]  
+- [[#Llama2 model]]   
 - [[#RLHF]]:   
 	- Proximal Policy Optimization algorithm
 	- Direct Preference Optimization algorithm
