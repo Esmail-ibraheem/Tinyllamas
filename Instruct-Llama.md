@@ -1,7 +1,7 @@
 ## Instruct-Llama: Fine-Tuning Llama and Transformer Models with Reinforcement Learning from Human Feedback
 --- 
 **Contents:
-- [[#Transformers]]: 
+- [[#Transformers]]:  
 	- [[#^bd33fb ]] 
 	- [[#^20bbbe]] 
 - [[#Llama2 model]]  
