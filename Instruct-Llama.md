@@ -5,7 +5,7 @@
 	- [[#^bd33fb ]] 
 	- [[#^20bbbe]] 
 - [[#Llama2 model]]  
-- [[#RLHF]]:  
+- [[#RLHF]]:   
 	- Proximal Policy Optimization algorithm
 	- Direct Preference Optimization algorithm
 	- Supervised Fine-tuning  
