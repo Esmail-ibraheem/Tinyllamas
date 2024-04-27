@@ -2,7 +2,7 @@
 
 
 <p align="center">
-  <img src="https://github.com/Esmail-ibraheem/InstructLlama/blob/main/cyberllama.jpg" alt="Your Image Description" width="400" height=400">
+  <img src="https://github.com/Esmail-ibraheem/InstructLlama/blob/main/cyberllama.jpg" alt="Your Image Description" width="500" height=400">
 </p>
 
 <p align="center">
