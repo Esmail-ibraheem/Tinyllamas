@@ -1,4 +1,4 @@
-<h1 align="center">InstructLlama2🦙</h1>
+InstructLlama2🦙
 
 
 <p align="center">
