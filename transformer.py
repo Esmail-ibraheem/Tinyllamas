@@ -11,7 +11,7 @@ class TransformerConfig:
     source_sequence_length: int 
     target_sequence_length: int 
     d_model: int = 512 
-    Layers: int = 6 
+    Layers: int = 6  
     heads: int = 8 
     dropout: float = 0.1 
     d_ff: int = 2048 
