@@ -9,7 +9,7 @@ class TransformerConfig:
     source_vocab_size: int    
     target_vocab_size: int   
     source_sequence_length: int 
-    target_sequence_length: int   
+    target_sequence_length: int    
     d_model: int = 512 
     Layers: int = 6  
     heads: int = 8 
