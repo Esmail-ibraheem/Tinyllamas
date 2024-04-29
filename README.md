@@ -1,4 +1,4 @@
-# InstructLlama2🦙
+# InstructLlama-2-7B🦙
  
 
 <p align="center">
