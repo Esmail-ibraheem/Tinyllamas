@@ -7,3 +7,15 @@
 
 llama 2 model from scratch, refactored the transformer model, and trained it using reinforcement learning from human feedback (RLHF) techniques such as (PPO) and (DPO), alongside supervised fine-tuning (SFT).
 
+## BibTex
+```BibTex
+@article{Gumaan2024InstructLlama,
+  title   = "Instruct-Llama",
+  author  = "Gumaan, Esmail",
+  journal = "",
+  year    = "2024",
+  month   = "Agu",
+  url     = ""
+}
+
+```
