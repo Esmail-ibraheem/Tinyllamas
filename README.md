@@ -12,7 +12,7 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 @article{Gumaan2024-X-Llama,
   title   = "X-Llama",
   author  = "Gumaan, Esmail",
-  journal = "",
+  code = "",
   year    = "2024",
   month   = "Agu",
   url     = ""
