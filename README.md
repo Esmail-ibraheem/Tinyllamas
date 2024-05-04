@@ -9,8 +9,8 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 
 ## BibTex
 ```BibTex
-@article{Gumaan2024InstructLlama,
-  title   = "Instruct-Llama",
+@article{Gumaan2024-X-Llama,
+  title   = "X-Llama",
   author  = "Gumaan, Esmail",
   journal = "",
   year    = "2024",
