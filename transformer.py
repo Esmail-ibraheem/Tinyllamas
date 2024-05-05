@@ -3,7 +3,7 @@ import math
 import torch                   
 import torch.nn as nn                         
                          
-@dataclass                
+@dataclass                 
 class TransformerConfig:          
     source_vocab_size: int       
     target_vocab_size: int     
