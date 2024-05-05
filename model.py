@@ -1,9 +1,8 @@
+from cmath import cos
 import math
-from operator import pos
-from os import device_encoding
-from time import perf_counter 
+from time import perf_counter
 import warnings
-from typing import List, Optional, Tuple, Union 
+from typing import List, Optional, Tuple, Union
 
 import torch
 import torch.nn.functional as F
@@ -40,7 +39,7 @@ logger = logging.get_logger(__name__)
 _CONFIG_FOR_DOC = "LlamaConfig"
 
 def _get_unpad_data(attention_mask):
-    seqlens_in_batch = attention_mask.sum(dim= -1, dtype= torch.int32)
+    seqlens_in_batch = attention_mask.sum(dim=-1, dtype=torch.int32)
     indices = torch.nonzero(seqlens_in_batch.flatten(), as_tuple=False).flatten()
     max_seqlens_in_batch = seqlens_in_batch.max().item()
     cu_seqlens = F.pad(torch.cumsum(seqlens_in_batch, dim=0, dtype=torch.int32), (1,0))
@@ -51,19 +50,19 @@ def _get_unpad_data(attention_mask):
     )
 
 class LlamaRMSNorm(nn.Module):
-    def __init__(self, hidden_size, eps= 1e-6) -> None:
+    def __init__(self, hidden_size, eps=1e-6) -> None:
         super().__init__()
         self.weight = nn.Parameter(torch.ones(hidden_size))
         self.variance_eps = eps 
     
     def forward(self, hidden_states):
-        input_dtype = hidden_states.dtype
+        input_dtype = hidden_states.dtype 
         hidden_states = hidden_states.to(torch.float32)
-        variance = hidden_states.pow(2).mean(-1, keepdim= True)
-        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_eps)
+        variance = hidden_states.pow(2).mean(-1, keepdim=True)
+        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_eps).type_as()
         return self.weight * hidden_states.to(input_dtype)
 
-class Llama2RMSNorm(nn.Module):
+class LlamaChatRMSNorm(nn.Module):
     def __init__(self, dim, eps=1e-6) -> None:
         super().__init__()
         self.weight = nn.Parameter(torch.ones(dim))
@@ -76,24 +75,24 @@ class Llama2RMSNorm(nn.Module):
         return self.weight * self._norm(x.float()).type_as(x)
 
 ALL_LAYERNORM_LAYERS.append(LlamaRMSNorm)
-ALL_LAYERNORM_LAYERS.append(Llama2RMSNorm)
+ALL_LAYERNORM_LAYERS.append(LlamaChatRMSNorm)
 
 class LlamaRotaryEmbeddings(nn.Module):
-    def __init__(self, dim, max_position_embedding= 2048, base= 10000, device= None, scaling_factor= 1.0) -> None:
+    def __init__(self, dim, max_position_embedding=2048, base=10000, device=None, scaling_factor=1.0) -> None:
         super().__init__()
         self.dim = dim 
         self.max_position_embedding = max_position_embedding
-        self.base = base 
         self.scaling_factor = scaling_factor
-        self.inv_frequency = 1.0 / (self.base ** (torch.arange(0, dim, 2, dtype=torch.int64).float().to(device) / self.dim))
+        self.base = base 
+        self.inv_frequency = 1.0 / (self.base ** (torch.arange(0, dim, 2).float().to(device) / self.dim))
         self.register_buffer("inv_frequency", self.inv_frequency, persistent=False)
         self.max_seq_len_cached = max_position_embedding
-        t = torch.arange(0, self.max_seq_len_cached, device=device, dtype=torch.int64).type_as(self.inv_frequency)
-        t = t / self.scaling_factor
+        t = torch.arange(0, max_position_embedding, device=device, dtype=torch.int64)
+        t = t / scaling_factor
         freqs = torch.outer(t, self.inv_frequency)
         emb = torch.cat((freqs, freqs), dim=-1)
-        self.register_buffer("_cos_chached", torch.cos().to(torch.get_default_dtype()), persistent=False)
-        self.register_buffer("_sin_cached", torch.sin().to(torch.get_default_dtype()), persistent=False)
+        self.register_buffer("_cos_cached", emb.cos().to(torch.get_default_dtype()), persistent=False)
+        self.register_buffer("_sin_cached", emb.sin().to(torch.get_default_dtype()), persistent=False)
     
     @property
     def sin_cached(self):
@@ -101,27 +100,31 @@ class LlamaRotaryEmbeddings(nn.Module):
             "The sin_cached attribute will be removed in 4.39. Bear in mind that its contents changed in v4.38. Use "
             "the forward method of RoPE from now on instead. It is not used in the `LlamaAttention` class"
         )
-        return self._sin_cached
-
+        return self.sin_cached
+    
     @property
     def cos_cached(self):
         logger.warning_once(
             "The cos_cached attribute will be removed in 4.39. Bear in mind that its contents changed in v4.38. Use "
             "the forward method of RoPE from now on instead. It is not used in the `LlamaAttention` class"
         )
-        return self._cos_cached
+        return self.cos_cached
 
     @torch.no_grad
     def forward(self, x, position_ids):
-        inv_frequency_expanded = self.inv_frequency[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        inv_frequence_expanded = self.inv_frequency[None, :, None].float().expand(position_ids.shape[0], -1, 1)
         position_ids_expanded = position_ids[None, :, None].float()
         device_type = x.device.type 
         device_type = device_type if isinstance(device_type, str) and device_type != "mps" else "cpu"
         with torch.autocast(device_type=device_type, enabled=False):
-            freqs = (inv_frequency_expanded.float() @ position_ids_expanded.float()).transpose(1,2)
+            freqs = (inv_frequence_expanded.float() @ position_ids_expanded.float()).transpose(1,2)
             emb = torch.cat((freqs, freqs), dim=-1)
             cos = emb.cos()
             sin = emb.sin()
-        return cos.dtype(x.dtype), sin.dtype(x.dtype)
+        return cos.to(dtype=x.dtype), sin.to(dtype=x.dtype)
 
- 
+class LlamaLinearScalingRotaryEmbeddings(LlamaRotaryEmbeddings):
+    def forward(self, x, position_ids):
+        position_ids = position_ids.float() / self.scaling_factor
+        cos, sin = super().forward(x, position_ids)
+        return cos, sin
