@@ -22,8 +22,12 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
   <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA.png" alt="Your Image Description">
 </p>
 
-- **`Grouped Query Attention(GQA)`:**
-- **`Multi-Query Attention(MQA)`:**
+- **`Grouped Query Attention(GQA), and Multi-Query Attention(MQA)`:**
+    <p align="center">
+  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/GQA.png" alt="Your Image Description">
+</p>
+
+
 - **`Flash-Attention`:**
 
 ---
