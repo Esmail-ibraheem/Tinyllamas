@@ -12,7 +12,9 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
    - Llama Rotary Embeddings.
    - Llama Linear Scaling Rotary Embeddings.
    - Llama Dynamic NTK Scaling Rotary Embeddings.
-https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/RoPE.png
+<p align="center">
+  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/RoPE.png" alt="Your Image Description" width="400" height=400">
+</p>
 - **`LlamaChat`.**
 - **`Multi-Head Attention(MHA)`:**
 - **`Grouped Query Attention(GQA)`:**
