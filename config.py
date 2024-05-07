@@ -7,7 +7,7 @@ class LlamaConfig:
     dim: int = 4096  
     n_layers: int = 32
     n_heads: int = 32 
-    n_kv_heads: Optional[int] = None
+    n_kv_heads: Optional[int] = None 
     vocab_size: int = -1 # Later set in the build method
     multiple_of: int = 256
     ffn_dim_multiplier: Optional[float] = None
