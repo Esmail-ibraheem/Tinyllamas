@@ -4,7 +4,7 @@ from typing import Optional
 
 @dataclass 
 class LlamaConfig:
-    dim: int = 4096  
+    dim: int = 4096   
     n_layers: int = 32
     n_heads: int = 32 
     n_kv_heads: Optional[int] = None 
