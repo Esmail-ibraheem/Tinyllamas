@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 
-@dataclass
+@dataclass 
 class LlamaConfig:
     dim: int = 4096
     n_layers: int = 32
