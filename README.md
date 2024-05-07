@@ -17,21 +17,30 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 </p>
 
 - **`LlamaChat`.**
-- **`Multi-Head Attention(MHA)`:**
-  <p align="center">
-  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA.png" alt="Your Image Description">
-</p>
+- **`Attentions:`**
+        Multi-Query attention(MQA) is a mechanism that uses only a single key-value head for multiple queries, which can save memory and greatly speed up decoder inference.
+     	
+     	However, MQA may lead to a decrease in quality. In fact, we not only want fast inference, but also want the quality to be on par with MHA, so Grouped-query attention(GQA)[1] comes into play.
+     
+     	Grouped-query attention(GQA) is an interpolation of multi-query and multi-head attention. It achieves a quality similar to multi-head attention while maintaining a comparable speed to multi-query attention.
+   - **`Multi-Head Attention(MHA)`:**
+       <p align="center">
+       <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA.png" alt="Your Image Description">
+     </p>
+     
+   - **`Grouped Query Attention(GQA), and Multi-Query Attention(MQA)`:**
+      - Scalable GQA.
+      - Fixed GQA.
+      - MQA.
+           <p align="center">
+         <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/GQA.png" alt="Your Image Description">
+       </p>
 
-- **`Grouped Query Attention(GQA), and Multi-Query Attention(MQA)`:**
-   - Scalable GQA.
-   - Fixed GQA.
-   - MQA.
-    <p align="center">
-  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/GQA.png" alt="Your Image Description">
-</p>
 
 
-- **`Flash-Attention`:**
+
+
+   - **`Flash-Attention`:**
 
 ---
 
