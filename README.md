@@ -9,23 +9,24 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 
 ## Features:
 - **`Rotary Embeddings`:**
-   - Llama Rotary Embeddings.
-   - Llama Linear Scaling Rotary Embeddings.
-   - Llama Dynamic NTK Scaling Rotary Embeddings.
+   - Rotary Embeddings.
+   - Linear Scaling Rotary Embeddings.
+   - Dynamic NTK Scaling Rotary Embeddings.
 <p align="center">
   <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/RoPE.png" alt="Your Image Description">
 </p>
 
 - **`LlamaChat`.**
 - **`Attentions:`**
-
+  The standard practice for autoregressive decoding is to cache the keys and values of the previous tokens in the sequence to speed up attention computation. \However, as the context window or batch size increases, the memory cost associated with the size of the key-value cache(kv cache) in the multi-head attention(MHA) model significantly increases.
    - **`Multi-Head Attention(MHA)`:**
        <p align="center">
        <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA.png" alt="Your Image Description">
      </p>
      
    - **`Grouped Query Attention(GQA), and Multi-Query Attention(MQA)`:**
-      - Scalable GQA.
+      - Scalable GQA:
+          
       - Fixed GQA.
       - MQA.
            <p align="center">
