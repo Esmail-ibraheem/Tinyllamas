@@ -1,9 +1,13 @@
+from email.mime import base
 import math
+from operator import inv
+from re import A
+from time import perf_counter
 import warnings
-from typing import List, Optional, Tuple, Union 
-  
-import torch    
-import torch.nn.functional as F 
+from typing import List, Optional, Tuple, Union
+
+import torch
+import torch.nn.functional as F
 import torch.utils.checkpoint
 from torch import nn
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
@@ -363,9 +367,58 @@ class LlamaFixedGroupedQueryAttention(nn.Module):
         output = (output.transpose(1, 2).contiguous().view(batch_size, seq_len, -1))
         return self.wo(output) # (B, 1, Dim) -> (B, 1, Dim)
 
-class MultiHeadAttention(nn.Module):
-    pass 
-class MultiGroupedQueryAttention(nn.Module):
-    pass 
+def MultiHeadAttention():
+    d_model, batch, heads, key, value = 512, 32, 8, (512 // 8), (512 // 8)
+    
+    m = 5 # suppose we have already cached "m" tokens 
+    previous_key = torch.rand(batch, heads, m, key)
+    previous_value = torch.rand(batch, heads, m, value)
+
+    X = torch.rand(batch, d_model) # query
+    M = torch.rand(batch, d_model) # key and value 
+
+    P_q = torch.rand(heads, d_model, key)
+    P_k = torch.rand(heads, d_model, key)
+    P_v = torch.rand(heads, d_model, value)
+    P_o = torch.rand(heads, d_model, value)
+
+    q = torch.einsum("bd,hdk->bhk", X, P_q)
+    new_k = torch.concat([previous_key, torch.einsum("bd,hdk->bhk", M, P_k).unsqueeze(2)], axis=2)
+    new_v = torch.concat([previous_value, torch.einsum("bd,hdk->bhk", M, P_v).unsqueeze(2)], axis=2)
+
+    logits = torch.einsum("bhk,bhmk->bhm", q, new_k)
+    weights = torch.softmax(logits, dim=-1)
+    output = torch.einsum("bhm,bhmv->bhv", weights, new_v)
+    y = torch.einsum("bhv,hdv->bd", output, P_o)
+
+    return y, new_k, new_v
+
+def MultiQueryAttention():
+    d_model, batch, heads, key, value = 512, 32, 8, (512 // 8), (512 // 8)
+    
+    m = 5 # suppose we have already cached "m" tokens 
+    previous_key = torch.rand(batch, m, key)
+    previous_value = torch.rand(batch,  m, value)
+
+    X = torch.rand(batch, d_model) # query
+    M = torch.rand(batch, d_model) # key and value 
+
+    P_q = torch.rand(heads, d_model, key)
+    P_k = torch.rand(d_model, key)
+    P_v = torch.rand(d_model, value)
+    P_o = torch.rand(heads, d_model, value)
+
+    q = torch.einsum("bd,hdk->bhk", X, P_q)
+    k = torch.concat([previous_key, torch.einsum("bd,dk->bk", M, P_k).unsqueeze(1)], axis=1)
+    v = torch.concat([previous_value, torch.einsum("bd,dv->bv", M, P_v).unsqueeze(1)], axis=1)
+
+    logits = torch.einsum("bhk,bmk->bhm", q, k)
+    weights = torch.softmax(logits, dim=-1)
+    output = torch.einsum("bhm,bhmv->bhv", weights, v)
+    y = torch.einsum("bhv,hdv->bd", output, P_o)
+
+    return y, k, v
+
 class FlashAttention(LlamaScalableGroupedQueryAttention):
     pass 
+
