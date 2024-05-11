@@ -57,7 +57,7 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 	</p>
 		 	shows how performance varies with uptraining proportion for T5 XXL with MQA and GQA. First, we note that GQA already achieves reasonable performance after conversion while MQA requires uptraining to be useful. Both MQA and GQA gain from 5% uptraining with diminishing returns from 10%.
 
----
+	---
 
 
    - **`Flash-Attention`:**
