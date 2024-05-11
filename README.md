@@ -25,6 +25,8 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
        <p align="center">
        <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA.png" alt="Your Image Description">
      </p>
+
+     ---
      
    - **`Grouped Query Attention(GQA), and Multi-Query Attention(MQA)`:**\
       Grouped-query attention divides query heads into G-groups, each of which shares a single key head and value head. GQA-G refers to grouped-query with G groups. GQA-1, with a single group and therefore single key and value head, is equivalent to MQA, while GQA-H, with groups equal to number of heads, is equivalent to MHA. following Figure shows a comparison of grouped-query attention and multi head/multi-query attention. When converting a multi-head checkpoint to a GQA checkpoint, we construct each group key and value head by mean pooling all the original heads within that group. An intermediate number of groups leads to an interpolated model that is higher quality than MQA but faster than MHA, and, as we will show, rep resents a favorable trade-off. Going from MHA to MQA reduces H key and value heads to a single key and value head, reducing the size of the key-value cache and therefore amount of data that needs to be loaded by a factor of H. However, larger models generally scale the number of heads, such that multi-query attention represents a more aggressive cut in both memory bandwidth and capacity. GQA lets us keep the same proportional decrease in bandwidth and capacity as model size increases.
