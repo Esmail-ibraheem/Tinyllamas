@@ -44,7 +44,7 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 		
 
 	<p align="center">
-	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="300" height=400">
+	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="500" height=400">
 	</p>
 
 
