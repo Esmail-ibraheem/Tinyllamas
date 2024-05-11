@@ -1,7 +1,7 @@
 from email.mime import base
 import math
 from operator import inv
-from re import A
+from re import A 
 from time import perf_counter
 import warnings
 from typing import List, Optional, Tuple, Union
