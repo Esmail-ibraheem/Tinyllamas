@@ -47,6 +47,8 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="500" height=400">
 	</p>
 		 Time per sample for GQA-XXL as a function of the number of GQA groups with input length 2048 and output length 512. Going from 1 (MQA) to 8 groups adds modest inference overhead, with increasing cost to adding more groups.
+	   demonstrates the effect of the number of GQA groups on inference speed. For larger models the memory band width overhead from the KV cache is less con straining (Shazeer, 2019), while the reduction in key-value size is sharper due to the increased number of heads. As a result, increasing the number of groups from MQA only results in modest slow downs initially, with increasing cost as we move closer to MHA. We selected 8 groups as a favor able 
+		middle ground.
 
  	<p align="center">
 	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA.png" alt="Your Image Description" width="500" height=400">
