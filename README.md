@@ -43,7 +43,9 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 	| Computationally slow |                 speed                 | Computationally fast |
 		
 
-
+		<p align="center">
+		  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="400" height=400">
+		</p>
 
 
 
