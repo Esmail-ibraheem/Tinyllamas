@@ -35,6 +35,13 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
          <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/GQA.png" alt="Your Image Description">
        </p>
 
+     ### MHA vs GQA vs MQA:
+     
+|         MHA          |                  GQA                  |         MQA          |
+|:--------------------:|:-------------------------------------:|:--------------------:|
+|     High quality     | A good compromise between quality and |   Loss in quality    |
+| Computationally slow |                 speed                 | Computationally fast |
+	
 
 
 
