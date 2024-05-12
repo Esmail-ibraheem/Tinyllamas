@@ -87,4 +87,4 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 
 ```
 ---
-## Notes:
+## Notes and Acknowledgments:
