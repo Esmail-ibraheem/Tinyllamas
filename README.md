@@ -64,7 +64,7 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 
    - **`Flash-Attention`:**
 	<p align="center">
-	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/flash-attn.png" alt="Your Image Description" >
+	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/flash-attn.png" alt="Your Image Description" width="550" height=400">
 	</p>
 
 ---
