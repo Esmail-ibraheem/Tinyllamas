@@ -1,7 +1,7 @@
 from cmath import cos
 from distutils.command.config import config
 import math
-from sre_parse import REPEAT_CHARS
+from sre_parse import REPEAT_CHARS 
 from time import perf_counter 
 import warnings 
 from typing import List, Optional, Tuple, Union
