@@ -1,7 +1,7 @@
 # X-Llama🦙: Extensible Language Model inspired by the original Llama model.
  
 <p align="center">
-  <img src="https://github.com/Esmail-ibraheem/FeedbackTransformer/blob/main/llama2.jpg" alt="Your Image Description" width="200" height=200">
+  <img src="https://github.com/Esmail-ibraheem/FeedbackTransformer/blob/main/llama2.jpg" alt="Your Image Description" width="380" height=380">
 </p>
 
 
