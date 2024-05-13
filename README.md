@@ -59,13 +59,7 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 	
     > MHA enables a nuanced understanding of the relationships between different parts of the input. Nevertheless, this complexity comes at a cost — a significant demand on memory bandwidth, especially during decoder inference. In multi-query attention, we average the heads for keys and values so that all query heads share the same key and value head. This is achieved by replicating the mean-pooled “head” H times, where H is the number of query heads. However, MQA is not without its drawbacks. The reduced complexity can lead to quality degradation and training instability. Grouped-query attention (GQA) is a simple approach that blends elements of multi-head attention (MHA) and multi-query attention (MQA) to create a more efficient attention mechanism.
 
-	---
 
-
-   - **`Flash-Attention`:**
-	<p align="center">
-	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/flash-attn.png" alt="Your Image Description" width="550" height=400">
-	</p>
 
 ---
 
