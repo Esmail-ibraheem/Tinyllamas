@@ -96,12 +96,13 @@ LLAMA_ATTENTIONS_CLASSES = {
 ```
 ---
 ## Notes and Acknowledgments:
-i built this project to develop my skills in large language models and transformers, by building the llama model itself from scartch and additionally implement multiple freatures with it such as multible attentions, so feel free to add any feature you want such as flash attention or something related, this project an implementation of multiple research papers: 
+i built this project to develop my skills in large language models and transformers, by building the llama model itself from scartch and additionally implement multiple freatures with it such as multible attentions, so feel free to add any feature you want such as flash attention or something related, this project an implementation of multiple research papers:\
+
 **papers**:
-[llama 2 research paper](https://arxiv.org/abs/2307.09288)\
-[attention is all you need research paper](https://arxiv.org/abs/1706.03762)\
-[Grouped Query Attention research paper](https://arxiv.org/abs/2305.13245)\
-[RoFormer: Enhanced Transformer with Rotary Position Embedding research paper](https://arxiv.org/abs/2104.09864)\
+- [llama 2 research paper](https://arxiv.org/abs/2307.09288)\
+- [attention is all you need research paper](https://arxiv.org/abs/1706.03762)\
+- [Grouped Query Attention research paper](https://arxiv.org/abs/2305.13245)\
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding research paper](https://arxiv.org/abs/2104.09864)
 
 **other**
 [llama from scratch](https://youtu.be/oM4VmoabDAI?si=rDegyrnSghByUEnK)\
