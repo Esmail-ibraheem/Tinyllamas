@@ -22,6 +22,9 @@ X-Llama/
 ├── model
 │
 └── config
+│
+└── inference
+
 ```
 
 ---
