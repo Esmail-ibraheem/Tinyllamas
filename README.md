@@ -96,4 +96,4 @@ LLAMA_ATTENTIONS_CLASSES = {
 ```
 ---
 ## Notes and Acknowledgments:
-(llama from scratch)[https://youtu.be/oM4VmoabDAI?si=rDegyrnSghByUEnK]
+[llama from scratch](https://youtu.be/oM4VmoabDAI?si=rDegyrnSghByUEnK)
