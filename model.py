@@ -1,44 +1,25 @@
 import math
-import warnings 
-from typing import List, Optional, Tuple, Union 
+import warnings
+from typing import Optional, Tuple
 
 import torch
 import torch.nn.functional as F
 import torch.utils.checkpoint
 from torch import nn
-from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss, MSELoss
 
+from transformers.cache_utils import Cache
 
-from transformers.activations import ACT2FN
-from transformers.cache_utils import Cache, DynamicCache, StaticCache
-from transformers.modeling_attn_mask_utils import AttentionMaskConverter
-from transformers.modeling_outputs import(
-    BaseModelOutputWithPast,
-    CausalLMOutputWithPast,
-)
-from transformers.modeling_utils import PreTrainedModel
 from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS
-from transformers.utils import (
-    add_start_docstrings,
-    add_start_docstrings_to_model_forward,
-    is_flash_attn_2_available,
-    is_flash_attn_greater_or_equal_2_10,
-    logging,
-    replace_return_docstrings,
-)
+from transformers.utils import logging 
 
 from config import LlamaConfig
-
-# if is_flash_attn_2_available():
-#     from flash_attn import flash_attn_func, flash_attn_varlen_func
-#     from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input 
 
 logger = logging.get_logger(__name__)
 
 _CONFIG_FOR_DOC = "LlamaConfig"
 
 def _get_unpad_data(attention_mask):
-    seqlens_in_batch = attention_mask.sum(dim=-1, dtype=torch.int32)
+    seqlens_in_batch = attention_mask.sum(-1, dtype=torch.int32)
     indices = torch.nonzero(seqlens_in_batch.flatten(), as_tuple=False).flatten()
     max_seqlens_in_batch = seqlens_in_batch.max().item()
     cu_seqlens = F.pad(torch.cumsum(seqlens_in_batch, dim=0, dtype=torch.int32), (1,0))
@@ -58,7 +39,7 @@ class LlamaRMSNorm(nn.Module):
         input_dtype = hidden_states.dtype 
         hidden_states = hidden_states.to(torch.int32)
         variance = hidden_states.pow(2).mean(-1, keepdim=True)
-        hidden_states = hidden_states * torch.rsqrt(variance + self.variance_eps)
+        hidden_states = hidden_states * torch.rsqrt(variance, self.variance_eps)
         return self.weight * hidden_states.to(input_dtype)
 
 class LlamaFixedRMSNorm(nn.Module):
@@ -77,16 +58,16 @@ ALL_LAYERNORM_LAYERS.append(LlamaRMSNorm)
 ALL_LAYERNORM_LAYERS.append(LlamaFixedRMSNorm)
 
 class LlamaRotaryEmbeddings(nn.Module):
-    def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None, scaling_factor=1.0) -> None:
+    def __init__(self, dim, max_position_embddings=2048, base=10000, device=None, scaling_factor=1.0) -> None:
         super().__init__()
         self.dim = dim 
-        self.max_position_embeddings = max_position_embeddings
+        self.max_position_embeddings = max_position_embddings
         self.base = base 
         self.scaling_factor = scaling_factor
         self.inv_frequency = 1.0 / (self.base * (torch.arange(0, self.dim, 2).float().to(device) / self.dim))
         self.register_buffer("inv_frequency", self.inv_frequency, persistent=False)
-        self.max_seq_lens_cached = max_position_embeddings
-        t = torch.arange(0, self.max_seq_lens_cached, device=device)
+        self.max_seq_len_cached = max_position_embddings
+        t = torch.arange(0, self.max_seq_len_cached, device=device)
         t = t / scaling_factor
         freqs = torch.outer(t, self.inv_frequency)
         emb = torch.cat((freqs, freqs), dim=-1)
@@ -111,7 +92,7 @@ class LlamaRotaryEmbeddings(nn.Module):
 
     @torch.no_grad
     def forward(self, x, position_ids):
-        inv_frequency_expanded = self.inv_frequency[None, :, None].float().expand(position_ids.shape[0], -1, 1)
+        inv_frequency_expanded = self.inv_frequency[None, : , None].float().expand(position_ids.shape[0], -1, 1)
         position_ids_expanded = position_ids[None, :, None].float()
         device_dtype = x.device.dtype 
         device_dtype = device_dtype if isinstance(device_dtype, str) and device_dtype == "mps" else "cpu"
@@ -125,36 +106,36 @@ class LlamaRotaryEmbeddings(nn.Module):
 class LlamaLinearScalingRotaryEmbeddings(LlamaRotaryEmbeddings):
     def forward(self, x, position_ids):
         position_ids = position_ids.float() / self.scaling_factor
-        cos, sin = super().forwar(x, position_ids)
+        cos, sin = super().forward(x, position_ids)
         return cos, sin 
 
 class LlamaDynamicNTKScalingRotaryEmbeddings(LlamaRotaryEmbeddings):
-    def forwrad(self, x, position_ids):
+    def forward(self, x, position_ids):
         seq_len = torch.max(position_ids) + 1 
         if seq_len > self.max_position_embeddings:
-            base = self.base * (self.scaling_factor * seq_len / self.max_position_embeddings - (self.scaling_factor - 1)) ** (self.dim / (self.dim-2))
+            base = self.base * (self.scaling_factor * seq_len / self.max_position_embeddings - (self.scaling_factor - 1)) ** (self.dim / (self.dim - 2))
             inv_frequency = 1.0 / (base * (torch.arange(0, self.dim, 2).float().to(x.device) / self.dim))
             self.register_buffer("inv_frequency", inv_frequency, persistent=False)
             cos, sin = super().forward(x, position_ids)
         return cos, sin 
 
-ALL_ROTARY_EMBEDDINGS_CLASSES = {
-    "rotary" : LlamaRotaryEmbeddings,
+LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
+    "rotary": LlamaRotaryEmbeddings,
     "linear": LlamaLinearScalingRotaryEmbeddings,
     "dynamic": LlamaDynamicNTKScalingRotaryEmbeddings,
 }
 
 def precompute_theta_pos_frequencies(head_dim: int, seq_len: int, device: str, theta: float=10000.0):
-    assert head_dim % 2 == 0, "dimensions must be divisable by 2"
+    assert head_dim % 2 == 0 , "dimension must be divisable by 2"
     theta_numerator = torch.arange(0, head_dim, 2).float()
     theta = 1.0 / (theta ** (theta_numerator / head_dim))
     m = torch.arange(seq_len, device=device)
-    freqs = torch.outer(m, theta)
+    freqs = torch.outer(m, theta).float()
     freqs_complex = torch.polar(torch.ones_like(freqs), freqs)
     return freqs_complex
 
-def apply_rotary_embeddings(x:torch.Tensor, freqs_complex: int, device:str):
-    x_complex = torch.view_as_complex(x.float().reshape(*x.shape[:-1], -1, 1))
+def apply_rotary_embeddings(x: torch.Tensor, freqs_complex: int, device:str):
+    x_complex = torch.view_as_complex(x.float().reshape(*x.shape[:-1], -1, 2))
     freqs_complex = freqs_complex.unsqueeze(0).unsqueeze(2)
     x_rotated = x_complex * freqs_complex
     x_out = torch.view_as_real(x_rotated)
@@ -164,13 +145,12 @@ def apply_rotary_embeddings(x:torch.Tensor, freqs_complex: int, device:str):
 def repeat_kv(x:torch.Tensor, n_rep: int):
     batch_size, seq_len, n_kv_heads, head_dim = x.shape 
     if n_rep == 1:
-        return x 
+        return x
     return (
         x[:, :, :, None, :]
         .expand(batch_size, seq_len, n_kv_heads, n_rep, head_dim)
         .reshape(batch_size, seq_len, n_kv_heads * n_rep, head_dim)
     )
-
 class LlamaScalableGroupedQueryAttention(nn.Module):
     def __init__(self, config: LlamaConfig, layer_idx: int) -> None:
         super().__init__()
@@ -264,8 +244,8 @@ class LlamaScalableGroupedQueryAttention(nn.Module):
             value_states = self.value_proj(hidden_states)
         
         query_states = query_states.view(bsz, q_len, self.num_heads, self.head_dim).transpose(1,2)
-        key_states = query_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1,2)
-        value_states = query_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1,2)
+        key_states = key_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1,2)
+        value_states = value_states.view(bsz, q_len, self.num_key_value_heads, self.head_dim).transpose(1,2)
 
         past_key_value = getattr(self, "past_key_value", past_key_value)
         cos, sin = self.emb_rotary(value_states, position_ids)
@@ -309,20 +289,20 @@ class LlamaScalableGroupedQueryAttention(nn.Module):
         return attention_weights, output_attention, past_key_value
 
 class LlamaFixedGroupedQueryAttention(nn.Module):
-    def __init__(self, args: LlamaConfig):
+    def __init__(self, config: LlamaConfig):
         super().__init__()
-        self.n_kv_heads = args.n_heads if args.n_kv_heads is None else args.n_kv_heads
-        self.n_heads_q = args.n_heads
+        self.n_kv_heads = config.n_heads if config.n_kv_heads is None else config.n_kv_heads
+        self.n_heads_q = config.n_heads
         self.n_rep = self.n_heads_q // self.n_kv_heads
-        self.head_dim = args.dim // args.n_heads
+        self.head_dim = config.dim // config.n_heads
 
-        self.wq = nn.Linear(args.dim, args.n_heads * self.head_dim, bias=False)
-        self.wk = nn.Linear(args.dim, self.n_kv_heads * self.head_dim, bias=False)
-        self.wv = nn.Linear(args.dim, self.n_kv_heads * self.head_dim, bias=False)
-        self.wo = nn.Linear(args.n_heads * self.head_dim, args.dim, bias=False)
+        self.wq = nn.Linear(config.dim, config.n_heads * self.head_dim, bias=False)
+        self.wk = nn.Linear(config.dim, self.n_kv_heads * self.head_dim, bias=False)
+        self.wv = nn.Linear(config.dim, self.n_kv_heads * self.head_dim, bias=False)
+        self.wo = nn.Linear(config.n_heads * self.head_dim, config.dim, bias=False)
 
-        self.cache_k = torch.zeros((args.max_batch_size, args.max_seq_len, self.n_kv_heads, self.head_dim))
-        self.cache_v = torch.zeros((args.max_batch_size, args.max_seq_len, self.n_kv_heads, self.head_dim))
+        self.cache_k = torch.zeros((config.max_batch_size, config.max_seq_len, self.n_kv_heads, self.head_dim))
+        self.cache_v = torch.zeros((config.max_batch_size, config.max_seq_len, self.n_kv_heads, self.head_dim))
 
     def forward(
         self,
@@ -362,57 +342,137 @@ class LlamaFixedGroupedQueryAttention(nn.Module):
         output = (output.transpose(1, 2).contiguous().view(batch_size, seq_len, -1))
         return self.wo(output) # (B, 1, Dim) -> (B, 1, Dim)
 
-def MultiHeadAttention():
-    d_model, batch, heads, key, value = 512, 32, 8, (512 // 8), (512 // 8)
+class MultiHeadAttention(nn.Module):
+    def MultiHeadAttention(self):
+        d_model, batch, heads, key, value = 512, 32, 8, (512 // 8), (512 // 8)
+        
+        m = 5 # suppose we have already cached "m" tokens 
+        previous_key = torch.rand(batch, heads, m, key)
+        previous_value = torch.rand(batch, heads, m, value)
+
+        X = torch.rand(batch, d_model) # query
+        M = torch.rand(batch, d_model) # key and value 
+
+        P_q = torch.rand(heads, d_model, key)
+        P_k = torch.rand(heads, d_model, key)
+        P_v = torch.rand(heads, d_model, value)
+        P_o = torch.rand(heads, d_model, value)
+
+        q = torch.einsum("bd,hdk->bhk", X, P_q)
+        new_k = torch.concat([previous_key, torch.einsum("bd,hdk->bhk", M, P_k).unsqueeze(2)], axis=2)
+        new_v = torch.concat([previous_value, torch.einsum("bd,hdk->bhk", M, P_v).unsqueeze(2)], axis=2)
+
+        logits = torch.einsum("bhk,bhmk->bhm", q, new_k)
+        weights = torch.softmax(logits, dim=-1)
+        output = torch.einsum("bhm,bhmv->bhv", weights, new_v)
+        y = torch.einsum("bhv,hdv->bd", output, P_o)
+
+        return y, new_k, new_v
+
+
+class MultiQueryAttention:
+    def MultiQueryAttention(self):
+        d_model, batch, heads, key, value = 512, 32, 8, (512 // 8), (512 // 8)
+        
+        m = 5 # suppose we have already cached "m" tokens 
+        previous_key = torch.rand(batch, m, key)
+        previous_value = torch.rand(batch,  m, value)
+
+        X = torch.rand(batch, d_model) # query
+        M = torch.rand(batch, d_model) # key and value 
+
+        P_q = torch.rand(heads, d_model, key)
+        P_k = torch.rand(d_model, key)
+        P_v = torch.rand(d_model, value)
+        P_o = torch.rand(heads, d_model, value)
+
+        q = torch.einsum("bd,hdk->bhk", X, P_q)
+        k = torch.concat([previous_key, torch.einsum("bd,dk->bk", M, P_k).unsqueeze(1)], axis=1)
+        v = torch.concat([previous_value, torch.einsum("bd,dv->bv", M, P_v).unsqueeze(1)], axis=1)
+
+        logits = torch.einsum("bhk,bmk->bhm", q, k)
+        weights = torch.softmax(logits, dim=-1)
+        output = torch.einsum("bhm,bhmv->bhv", weights, v)
+        y = torch.einsum("bhv,hdv->bd", output, P_o)
+
+        return y, k, v
+
+LLAMA_ATTENTIONS_CLASSES = {
+    "GQA": LlamaScalableGroupedQueryAttention,
+    "MHA": MultiHeadAttention,
+    "MQA": MultiQueryAttention,
+}
+
+class LlamaMLP(nn.Module):
+    def __init__(self, config: LlamaConfig) -> None:
+        super().__init__()
+        hidden_dim = 4 * config.dim
+        hidden_dim = int(2 * hidden_dim / 3)
+        if config.ffn_dim_multiplier is not None:
+            hidden_dim = int(hidden_dim * config.ffn_dim_multiplier)
+        hidden_dim = config.multiple_of * ((hidden_dim * config.multiple_of - 1) // config.multiple_of)
+
+        self.weight_1 = nn.Linear(config.dim, hidden_dim, bias=False)
+        self.weight_2 = nn.Linear(hidden_dim, config.dim, bias=False)
+        self.weight_3 = nn.Linear(config.dim, hidden_dim, bias=False)
     
-    m = 5 # suppose we have already cached "m" tokens 
-    previous_key = torch.rand(batch, heads, m, key)
-    previous_value = torch.rand(batch, heads, m, value)
+    def forward(self, x:torch.Tensor):
+        swish = F.silu(self.weight_1(x))
+        x_V = self.weight_3(x)
+        x = swish * x_V 
+        x = self.weight_2(x)
+        return x
 
-    X = torch.rand(batch, d_model) # query
-    M = torch.rand(batch, d_model) # key and value 
+class LlamaEncoderBlock(nn.Module):
+    def __init__(self, config: LlamaConfig) -> None:
+        super().__init__()
+        self.n_heads = config.n_heads
+        self.dim = config.dim
+        self.head_dim = config.dim // config.n_heads
 
-    P_q = torch.rand(heads, d_model, key)
-    P_k = torch.rand(heads, d_model, key)
-    P_v = torch.rand(heads, d_model, value)
-    P_o = torch.rand(heads, d_model, value)
+        self.attention = LlamaFixedGroupedQueryAttention(config)
+        # self.self_attn = LLAMA_ATTENTIONS_CLASSES[config._attn_implementation](config=config, layer_idx=self.layer_idx)
+        self.MLP = LlamaMLP(config)
 
-    q = torch.einsum("bd,hdk->bhk", X, P_q)
-    new_k = torch.concat([previous_key, torch.einsum("bd,hdk->bhk", M, P_k).unsqueeze(2)], axis=2)
-    new_v = torch.concat([previous_value, torch.einsum("bd,hdk->bhk", M, P_v).unsqueeze(2)], axis=2)
-
-    logits = torch.einsum("bhk,bhmk->bhm", q, new_k)
-    weights = torch.softmax(logits, dim=-1)
-    output = torch.einsum("bhm,bhmv->bhv", weights, new_v)
-    y = torch.einsum("bhv,hdv->bd", output, P_o)
-
-    return y, new_k, new_v
-
-def MultiQueryAttention():
-    d_model, batch, heads, key, value = 512, 32, 8, (512 // 8), (512 // 8)
+        self.attention_norm = LlamaFixedRMSNorm(config.dim, eps=config.norm_eps)
+        self.ff_norm = LlamaFixedRMSNorm(config.dim, eps=config.norm_eps)
     
-    m = 5 # suppose we have already cached "m" tokens 
-    previous_key = torch.rand(batch, m, key)
-    previous_value = torch.rand(batch,  m, value)
+    def forward(self, x:torch.Tensor, start_pos: int, freqs_complex: torch.Tensor):
+        h = x + self.attention.forward(self.attention_norm(x), start_pos, freqs_complex)
+        out = h + self.MLP.forward(self.ff_norm(h))
+        return out 
 
-    X = torch.rand(batch, d_model) # query
-    M = torch.rand(batch, d_model) # key and value 
+class Transformer(nn.Module):
 
-    P_q = torch.rand(heads, d_model, key)
-    P_k = torch.rand(d_model, key)
-    P_v = torch.rand(d_model, value)
-    P_o = torch.rand(heads, d_model, value)
+    def __init__(self, config: LlamaConfig):
+        super().__init__()
 
-    q = torch.einsum("bd,hdk->bhk", X, P_q)
-    k = torch.concat([previous_key, torch.einsum("bd,dk->bk", M, P_k).unsqueeze(1)], axis=1)
-    v = torch.concat([previous_value, torch.einsum("bd,dv->bv", M, P_v).unsqueeze(1)], axis=1)
+        assert config.vocab_size != -1, "Vocab size must be set"
 
-    logits = torch.einsum("bhk,bmk->bhm", q, k)
-    weights = torch.softmax(logits, dim=-1)
-    output = torch.einsum("bhm,bhmv->bhv", weights, v)
-    y = torch.einsum("bhv,hdv->bd", output, P_o)
+        self.config = config
+        self.vocab_size = config.vocab_size
+        self.n_layers = config.n_layers
+        self.tok_embeddings = nn.Embedding(self.vocab_size, config.dim)
 
-    return y, k, v
+        self.layers = nn.ModuleList()
+        for layer_id in range(config.n_layers):
+            self.layers.append(LlamaEncoderBlock(config))
 
-class FlashAttention2(LlamaScalableGroupedQueryAttention):
-    pass 
+        self.norm = LlamaFixedRMSNorm(config.dim, eps=config.norm_eps)
+        self.output = nn.Linear(config.dim, self.vocab_size, bias=False)
+
+        self.freqs_complex = precompute_theta_pos_frequencies(self.config.dim // self.config.n_heads, self.config.max_seq_len * 2, device=self.config.device)
+
+    def forward(self, tokens: torch.Tensor, start_pos: int):
+        batch_size, seq_len = tokens.shape
+        assert seq_len == 1, "Only one token at a time can be processed"
+
+        h = self.tok_embeddings(tokens)
+
+        freqs_complex = self.freqs_complex[start_pos:start_pos + seq_len]
+        
+        for layer in self.layers:
+            h = layer(h, start_pos, freqs_complex)
+        h = self.norm(h)
+        output = self.output(h).float()
+        return output
