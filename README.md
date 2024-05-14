@@ -99,6 +99,11 @@ LLAMA_ATTENTIONS_CLASSES = {
 ## installs:
 install the requirements libraries:
 ```
+pip install requirements
+```
+or 
+```
+pip install pytorch transformers
 ```
 download the repo
 ```
