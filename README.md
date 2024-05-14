@@ -15,6 +15,13 @@ X-Llama is an advanced language model framework, inspired by the original Llama 
 <p align="center">
   <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/RoPE.png" alt="Your Image Description">
 </p>
+	```python
+ 	LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
+	    "rotary": LlamaRotaryEmbeddings,
+	    "linear": LlamaLinearScalingRotaryEmbeddings,
+	    "dynamic": LlamaDynamicNTKScalingRotaryEmbeddings,
+	}
+ 	```
 
 - **`LlamaChat`.**
 - **`Attentions:`**
