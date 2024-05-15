@@ -112,7 +112,7 @@ clone the repo
 ```
 git clone https://github.com/Esmail-ibraheem/X-Llama.git
 ```
-run the download shell to download the llama 2 weights 
+run the download shell file to download the llama 2 weights 
 ```
 .\download.sh
 ```
