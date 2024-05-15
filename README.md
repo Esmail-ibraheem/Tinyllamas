@@ -118,6 +118,7 @@ run the download shell to download the llama 2 weights
 ```
 after downloading the weights, run the inference code:
 ```
+python inference.py
 ```
 
 ---
