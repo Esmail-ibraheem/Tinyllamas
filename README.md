@@ -78,14 +78,14 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 		
 
 	<p align="center">
-	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="550" height=400">
+	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="600" height=400">
 	</p>
 		 Time per sample for GQA-XXL as a function of the number of GQA groups with input length 2048 and output length 512. Going from 1 (MQA) to 8 groups adds modest inference overhead, with increasing cost to adding more groups.
 	   demonstrates the effect of the number of GQA groups on inference speed. For larger models the memory band width overhead from the KV cache is less con straining (Shazeer, 2019), while the reduction in key-value size is sharper due to the increased number of heads. As a result, increasing the number of groups from MQA only results in modest slow downs initially, with increasing cost as we move closer to MHA. We selected 8 groups as a favor able 
 		middle ground.
 
  	<p align="center">
-	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA.png" alt="Your Image Description" width="550" height=400">
+	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA.png" alt="Your Image Description" width="600" height=400">
 	</p>
 		 	shows how performance varies with uptraining proportion for T5 XXL with MQA and GQA. First, we note that GQA already achieves reasonable performance after conversion while MQA requires uptraining to be useful. Both MQA and GQA gain from 5% uptraining with diminishing returns from 10%.
 	
