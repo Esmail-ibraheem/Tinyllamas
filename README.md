@@ -46,7 +46,7 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 	}
 ```
 
-- **`LlamaChat`.**
+- **`LlamaChat`.** coming soon
 - **`Attentions:`**
   The standard practice for autoregressive decoding is to cache the keys and values of the previous tokens in the sequence to speed up attention computation. However, as the context window or batch size increases, the memory cost associated with the size of the key-value cache(kv cache) in the multi-head attention(MHA) model significantly increases.
    - **`Multi-Head Attention(MHA)`:**\
