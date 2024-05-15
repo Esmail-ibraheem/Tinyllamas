@@ -132,7 +132,7 @@ python inference.py
   author  = "Gumaan, Esmail",
   code = "https://github.com/Esmail-ibraheem/X-Llama/tree/main",
   year    = "2024",
-  month   = "Agu",
+  month   = "May",
   url     = "https://github.com/Esmail-ibraheem"
 }
 
