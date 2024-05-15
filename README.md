@@ -130,7 +130,7 @@ python inference.py
 @misc{Gumaan2024-X-Llama,
   title   = "X-Llama",
   author  = "Gumaan, Esmail",
-  howpublished = {\url{https://github.com/Esmail-ibraheem/X-Llama/tree/main}},
+  howpublished = {\url{https://github.com/Esmail-ibraheem/X-Llama}},
   year    = "2024",
   month   = "May",
   note    = "[Online; accessed 2024-05-15]",
