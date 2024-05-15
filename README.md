@@ -114,7 +114,7 @@ git clone https://github.com/Esmail-ibraheem/X-Llama.git
 ```
 run the download shell to download the llama 2 weights 
 ```
-.\download.shell
+.\download.sh
 ```
 after downloading the weights, run the inference code:
 ```
