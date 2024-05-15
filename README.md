@@ -127,14 +127,16 @@ python inference.py
 
 ## Citation:
 ```BibTex
-@article{Gumaan2024-X-Llama,
+@misc{Gumaan2024-X-Llama,
   title   = "X-Llama",
   author  = "Gumaan, Esmail",
-  code = "https://github.com/Esmail-ibraheem/X-Llama/tree/main",
+  howpublished = {\url{https://github.com/Esmail-ibraheem/X-Llama/tree/main}},
   year    = "2024",
   month   = "May",
-  url     = "https://github.com/Esmail-ibraheem"
+  note    = "[Online; accessed 2024-05-15]",
 }
+
+
 
 ```
 ---
