@@ -123,6 +123,15 @@ after downloading the weights, run the inference code:
 python inference.py
 ```
 
+now you should be able to test the model, by change the prompts whatever you want:
+```python
+prompts = [
+        "Simulate the motion of a projectile launched at a certain angle and velocity, including factors like gravity and air resistance.",
+        "Create a program that calculates the gravitational force between two objects based on their masses and distances."
+        "Develop a program to simulate the behavior of ideal gases using the laws of thermodynamics."
+    ]
+```
+
 ---
 
 ## Citation:
