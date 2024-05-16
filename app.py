@@ -5,7 +5,7 @@ import os
 # App title
 st.set_page_config(page_title="🦙💬 Llama 2 Chatbot by Esmail Gumaan")
 
-# Replicate Credentials
+# Replicate Credentials 
 with st.sidebar:
     st.title('🦙💬 Llama 2 Chatbot')
     st.title('👨‍💻🤖: Esmail A.Gumaan ')
