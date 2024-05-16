@@ -5,7 +5,7 @@ from config import LlamaConfig
 from sentencepiece import SentencePieceProcessor
 
 import time
-import json 
+import json  
 from tqdm import tqdm
 from pathlib import Path 
 from typing import Optional
