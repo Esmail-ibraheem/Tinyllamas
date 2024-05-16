@@ -126,20 +126,9 @@ if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() and allow_cuda else 'cpu'
 
     prompts = [
-        "Simply put, the theory of relativity states that ",
-        "If Google was an Italian company founded in Milan, it would",
-        # Few shot promt
-        """Translate English to French:
-        
-        sea otter => loutre de mer
-        peppermint => menthe poivrée
-        plush girafe => girafe peluche
-        cheese =>""",
-        # Zero shot prompt
-        """Tell me if the following person is actually Doraemon disguised as human:
-        Name: Umar Jamil
-        Decision: 
-        """
+        "Simulate the motion of a projectile launched at a certain angle and velocity, including factors like gravity and air resistance.",
+        "Create a program that calculates the gravitational force between two objects based on their masses and distances."
+        "Develop a program to simulate the behavior of ideal gases using the laws of thermodynamics."
     ]
 
     model = LLaMA.build(
