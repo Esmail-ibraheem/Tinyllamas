@@ -123,7 +123,7 @@ after downloading the weights, run the inference code:
 python inference.py
 ```
 
-now you should be able to test the model, by changing the prompts to whatever you want, here I wrote some physics prompt:
+now you should be able to test the model, by changing the prompts to whatever you want, here I wrote some physics prompts:
 ```python
 prompts = [
         "Simulate the motion of a projectile launched at a certain angle and velocity, including factors like gravity and air resistance.",
