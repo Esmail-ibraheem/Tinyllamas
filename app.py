@@ -2,7 +2,7 @@ import streamlit as st
 import replicate
 import os
 
-# App title
+# App title 
 st.set_page_config(page_title="🦙💬 Llama 2 Chatbot by Esmail Gumaan")
 
 # Replicate Credentials 
