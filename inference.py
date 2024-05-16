@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn 
 
-from model import Transformer
+from model import Transformer 
 from config import LlamaConfig
 
 from sentencepiece import SentencePieceProcessor
