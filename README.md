@@ -65,7 +65,10 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
       - MQA: Multi-Query attention(MQA) is a mechanism that uses only a single key-value head for multiple queries, which can save memory and greatly speed up decoder inference.
       - Fixed GQA: However, MQA may lead to a decrease in quality. In fact, we not only want fast inference but also want the quality to be on par with MHA, so Grouped-query attention(GQA) comes into play. Grouped-query attention(GQA) is an interpolation of multi-query and multi-head attention. It achieves a quality similar to multi-head attention while maintaining a comparable speed to multi-query attention.
       - `Scalable GQA:` the same as the fixed GQA but with multiple rotary embeddings.
-           
+           <p align="center">
+         <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/GQA.png" alt="Your Image Description">
+       </p>
+
      **_MHA vs GQA vs MQA:_**
 	     
 	|         MHA          |                  GQA                  |         MQA          |
