@@ -136,10 +136,10 @@ prompts = [
 
 ## Citation:
 ```BibTex
-@misc{Gumaan2024-X-Llama,
-  title   = "X-Llama",
+@misc{Gumaan2024-Xllama,
+  title   = "Xllama",
   author  = "Gumaan, Esmail",
-  howpublished = {\url{https://github.com/Esmail-ibraheem/X-Llama}},
+  howpublished = {\url{https://github.com/Esmail-ibraheem/Xllama}},
   year    = "2024",
   month   = "May",
   note    = "[Online; accessed 2024-05-15]",
