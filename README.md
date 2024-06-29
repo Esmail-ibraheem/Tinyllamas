@@ -101,7 +101,7 @@ LLAMA_ATTENTIONS_CLASSES = {
 
 ---
 
-## installs:
+## Usage:
 install the requirements libraries:
 ```
 pip install requirements
