@@ -5,7 +5,7 @@ import random
 import math
 import struct
 from typing import List
-
+ 
 class Config:
     dim: int
     hidden_dim: int
