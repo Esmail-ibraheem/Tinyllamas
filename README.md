@@ -62,6 +62,11 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 		```
  	![image](https://github.com/user-attachments/assets/a84ef9da-bed4-4a28-bb85-baefac593034)
 
+   	- **_using fastAPI_:running baby llama on the browser (this feature for javascript devs)**
+   	  ![image](https://github.com/user-attachments/assets/daa04c62-8cf9-4cd0-ab9a-5ace830e29fa)
+	![image](https://github.com/user-attachments/assets/bf0c85a8-5fc2-468a-8a6f-63645c2471d1)
+
+	
 
 	
 
