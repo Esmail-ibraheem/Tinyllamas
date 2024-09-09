@@ -1,4 +1,3 @@
-
 import os
 import sys
 import time
@@ -6,7 +5,6 @@ import random
 import math
 import struct
 from typing import List
-
 
 class Config:
     dim: int
@@ -26,7 +24,6 @@ class Config:
         self.vocab_size = vocab_size
         self.seq_len = seq_len
 
-
 class TransformerWeights:
     token_embedding_table: List[float]
     rms_att_weight: List[float]
@@ -43,9 +40,6 @@ class TransformerWeights:
     freq_cis_imag: List[float]
     wcls: List[float]
 
-
-
-
 def checkpoint_init_weights(weights: TransformerWeights,
                             conf: Config,
                             file,
@@ -53,7 +47,7 @@ def checkpoint_init_weights(weights: TransformerWeights,
     def read_floats(count):
         values = struct.unpack(str(count) + 'f', file.read(count * 4 if count > 0 else count))
         return values
-
+        
     weights.token_embedding_table = read_floats(conf.vocab_size * conf.dim)
     weights.rms_att_weight = read_floats(conf.n_layers * conf.dim)
     weights.wq = read_floats(conf.n_layers * conf.dim * conf.dim)
@@ -69,10 +63,8 @@ def checkpoint_init_weights(weights: TransformerWeights,
     weights.freq_cis_imag = read_floats(conf.seq_len * (conf.dim // conf.n_heads) // 2)
     weights.wcls = weights.token_embedding_table if shared_weights else read_floats(-1)
 
-
 def tokenizer_init(conf: Config, file):
     vocab, vocab_scores, max_token_length = [], [], 0
-
     max_token_length = struct.unpack('i', file.read(4))[0]
     for i in range(0, conf.vocab_size):
         vocab_scores.append(struct.unpack('f', file.read(4))[0])
@@ -89,7 +81,6 @@ def accum(a, b):
         a[i] += b[i]
     return a
 
-
 def rmsnorm(out, x, weight):
     size = len(x)
     
@@ -104,9 +95,7 @@ def rmsnorm(out, x, weight):
         out[j] = weight[j] * (ss * x[j])
     return out
 
-
 def softmax(x, size):
-    
     max_val = x[0]
     for i in range(1, size):
         if x[i] > max_val:
@@ -121,17 +110,13 @@ def softmax(x, size):
         x[i] /= exp_sum
     return x
 
-
 def matmul(xout, x, w, n, d):
-    
-    
     for i in range(d):
         val = 0.0
         for j in range(n):
             val += w[i * n + j] * x[j]
         xout[i] = val
     return xout
-
 
 class RunState:
     x: List[float]
@@ -147,10 +132,7 @@ class RunState:
     hb2: List[float]
     logits: List[float]
 
-
-
 def transformer(token: int, pos: int, conf: Config, state: RunState, weights: TransformerWeights) -> None:
-    
     x = state.x
     dim = conf.dim
     hidden_dim = conf.hidden_dim
@@ -168,17 +150,13 @@ def transformer(token: int, pos: int, conf: Config, state: RunState, weights: Tr
 
     
     for l in range(conf.n_layers):
-        
         state.xb = rmsnorm(state.xb, x, weights.rms_att_weight[l * dim: (l + 1) * dim])
-
-        
         state.q = matmul(state.q, state.xb, weights.wq[l * dim * dim: (l + 1) * dim * dim], dim, dim)
         state.k = matmul(state.k, state.xb, weights.wk[l * dim * dim: (l + 1) * dim * dim], dim, dim)
         state.v = matmul(state.v, state.xb, weights.wv[l * dim * dim: (l + 1) * dim * dim], dim, dim)
 
         
         for h in range(conf.n_heads):
-            
             q = state.q[h * head_size: (h + 1) * head_size]
             k = state.k[h * head_size: (h + 1) * head_size]
 
@@ -192,39 +170,27 @@ def transformer(token: int, pos: int, conf: Config, state: RunState, weights: Tr
                 q[i + 1] = q0 * fci + q1 * fcr
                 k[i] = k0 * fcr - k1 * fci
                 k[i + 1] = k0 * fci + k1 * fcr
-
             
             state.q[h * head_size: (h + 1) * head_size] = q
             state.k[h * head_size: (h + 1) * head_size] = k
-
         
         loff = l * conf.seq_len * dim  
         state.key_cache[loff + pos * dim: loff + (pos + 1) * dim] = state.k
         state.value_cache[loff + pos * dim: loff + (pos + 1) * dim] = state.v
 
-        
         for h in range(conf.n_heads):
-            
             q = state.q[h * head_size: (h + 1) * head_size]
-
-            
             att = state.att[h * conf.seq_len: (h + 1) * conf.seq_len]
-
             
             for t in range(pos + 1):
-                
                 k = state.key_cache[loff + t * dim + h * head_size: loff + (t + 1) * dim + h * head_size]
-
-                
                 score = sum(q[i] * k[i] for i in range(head_size))
                 score /= math.sqrt(head_size)
 
                 
                 att[t] = score
 
-            
             att = softmax(att, pos + 1)
-
             xb_ptr = h * head_size
             
             state.xb[xb_ptr: (h + 1) * head_size] = [0.0] * head_size
@@ -238,16 +204,9 @@ def transformer(token: int, pos: int, conf: Config, state: RunState, weights: Tr
                 for i in range(head_size):
                     state.xb[xb_ptr + i] += a * v[i]
 
-        
         state.xb2 = matmul(state.xb2, state.xb, weights.wo[l * dim * dim:(l + 1) * dim * dim], dim, dim)
-
-        
         x = accum(x, state.xb2)
-
-        
         state.xb = rmsnorm(state.xb, x, weights.rms_ffn_weight[l * dim:(l + 1) * dim])
-
-        
         state.hb = matmul(state.hb, state.xb,
                           weights.w1[l * dim * hidden_dim:
                                      (l + 1) * dim * hidden_dim],
@@ -256,33 +215,20 @@ def transformer(token: int, pos: int, conf: Config, state: RunState, weights: Tr
         state.hb2 = matmul(state.hb2, state.xb, weights.w3[l * dim * hidden_dim:
                                                            (l + 1) * dim * hidden_dim],
                            dim, hidden_dim)
-
-        
         state.hb = [state.hb[i] * (1.0 / (1.0 + math.exp(-state.hb[i])))
                     for i in range(hidden_dim)]
-
-        
         state.hb = [state.hb[i] * state.hb2[i] for i in range(hidden_dim)]
-
-        
         state.xb = matmul(state.xb, state.hb, weights.w2[l * dim * hidden_dim:
                                                          (
                                                                  (l + 1)
                                                                  * dim * hidden_dim
                                                          )], hidden_dim, dim)
 
-        
         x = accum(x, state.xb)
-
-    
     x = rmsnorm(x, x, weights.rms_final_weight)
-
-    
     state.logits = matmul(state.logits, x, weights.wcls, dim, conf.vocab_size)
 
-
 def str_lookup(string, vocab):
-    
     try:
         index = vocab.index(string)
         return index
@@ -309,31 +255,23 @@ def bpe_encode(text, vocab, vocab_scores):
         best_idx = -1
 
         for i in range(len(tokens) - 1):
-            
-            
             string = vocab[tokens[i]] + vocab[tokens[i + 1]]
             id = str_lookup(string, vocab)
             if id != -1 and vocab_scores[id] > best_score:
-                
                 best_score = vocab_scores[id]
                 best_id = id
                 best_idx = i
 
         if best_idx == -1:
             break  
-
-        
         tokens[best_idx] = best_id
         
         tokens = tokens[0:best_idx + 1] + tokens[best_idx + 2:]
 
     return tokens
 
-
 def time_in_ms():
-    
     return int(time.time() * 1000)
-
 
 def sample(probabilities):
     n = len(probabilities)
@@ -356,7 +294,6 @@ def argmax(v):
             max_i = i
             max_p = v[i]
     return max_i
-
 
 def init_run_state(state, config):
     state.x = [0.0] * config.dim
@@ -382,28 +319,20 @@ def run(args):
     rng_seed = int(time.time())
     random.seed(rng_seed)
 
-    
     weights = TransformerWeights()
 
     with open(checkpoint, "rb") as file:
-        
         _config = file.read(struct.calcsize('7i'))
-        
         dim, hidden_dim, n_layers, n_heads, n_kv_heads, vocab_size, seq_len = struct.unpack('7i', _config)
-        
         config = Config(dim, hidden_dim, n_layers, n_heads, n_kv_heads, vocab_size, seq_len)
-
-        
         shared_weights = 1 if config.vocab_size > 0 else 0
         config.vocab_size = abs(config.vocab_size)
 
         checkpoint_init_weights(weights, config, file, shared_weights)
 
-    
     if steps <= 0 or steps > config.seq_len:
         steps = config.seq_len
 
-    
     with open("tokenizer.bin", "rb") as file:
         vocab, vocab_scores, max_token_length = tokenizer_init(config, file)
 
@@ -457,15 +386,12 @@ def run(args):
         if next_token == 1:
             break
 
-        
         token = next_token
         pos += 1
 
-        
         if start == 0:
             start = time_in_ms()
 
-    
     end = time_in_ms()
     print(f"\nachieved tok/s: {(steps - 1) / (end - start) * 1000}")
 
@@ -477,9 +403,6 @@ if __name__ == "__main__":
         "steps": "256",
         "prompt": None
     }
-    
-    
-    
     
 
     if len(sys.argv) >= 2:
