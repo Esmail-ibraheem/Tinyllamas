@@ -60,7 +60,8 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 		```
  		python llama_interface.py
 		```
- 	![image](https://github.com/user-attachments/assets/ff0dbf60-15f9-4855-ac40-f7d6c378b91a)
+ 	![image](https://github.com/user-attachments/assets/a84ef9da-bed4-4a28-bb85-baefac593034)
+
 
 	
 
