@@ -113,6 +113,7 @@ LLAMA_ATTENTIONS_CLASSES = {
 ---
 
 ## Usage:
+### `Using the Adault llama:`
 install the requirements libraries:
 ```
 pip install requirements
@@ -143,7 +144,7 @@ prompts = [
     ]
 ```
 
-### or run this single file (Tinyllama) which is a baby llama:
+### or using this single file (Tinyllama) which is a baby llama:
 first download the checkpoints from Karpathys tinysotries: 
 ```
 
