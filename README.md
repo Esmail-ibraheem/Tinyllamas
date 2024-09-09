@@ -144,7 +144,7 @@ prompts = [
     ]
 ```
 
-### or using this single file (Tinyllama) which is a baby llama:
+### `or using this single file (Tinyllama) which is a baby llama:`
 first download the checkpoints from Karpathys tinysotries: 
 ```
 
