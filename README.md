@@ -1,6 +1,8 @@
 # Tinyllamas🦙: Extensible Language Model inspired by the original Llama model.
+
+https://github.com/user-attachments/assets/d998b84d-9835-4555-93f0-af7460297e9f
  
-![image](https://github.com/user-attachments/assets/ff0dbf60-15f9-4855-ac40-f7d6c378b91a)
+
 
 
 
@@ -50,9 +52,9 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
   	![__-Llama-2-Chatbot-by-Esmail-Gumaan-and-2-more-pages-Personal-Microsoft_-Edge-2024-05-15-17-19-03](https://github.com/Esmail-ibraheem/Tinyllamas/assets/113830751/b52b5b68-3f5e-4cfb-9719-b0fae5fa4678)
 
  	- **_using gradio_**
- 	
+ 	![image](https://github.com/user-attachments/assets/ff0dbf60-15f9-4855-ac40-f7d6c378b91a)
 
-	https://github.com/user-attachments/assets/d998b84d-9835-4555-93f0-af7460297e9f
+	
 
 
 
