@@ -4,7 +4,7 @@ import random
 import struct
 import sys
 
-from llama2 import TransformerWeights, checkpoint_init_weights, Config, tokenizer_init,RunState, bpe_encode, init_run_state, transformer, argmax, softmax, sample, time_in_ms
+from tinyllama import TransformerWeights, checkpoint_init_weights, Config, tokenizer_init,RunState, bpe_encode, init_run_state, transformer, argmax, softmax, sample, time_in_ms
 
 def run_model(checkpoint, temperature, steps, prompt):
     rng_seed = int(time.time())
@@ -78,15 +78,17 @@ def run_model(checkpoint, temperature, steps, prompt):
 def gradio_interface(checkpoint, temperature, steps, prompt):
     return run_model(checkpoint, float(temperature), int(steps), prompt)
 
-checkpoint_input = gr.Textbox(label="Checkpoint Path", value='./out/stories15M.bin')
+# Dropdown for selecting checkpoints
+checkpoint_dropdown = gr.Dropdown(label="Checkpoint", choices=["stories15M.bin", "stories20M.bin"], value="stories15M.bin")
 temperature_input = gr.Textbox(label="Temperature", value="0.0")
 steps_input = gr.Textbox(label="Steps", value="256")
 prompt_input = gr.Textbox(label="Prompt", placeholder="Enter your prompt here", value=None)
 
 interface = gr.Interface(fn=gradio_interface,
-                         inputs=[checkpoint_input, temperature_input, steps_input, prompt_input],
+                         inputs=[checkpoint_dropdown, temperature_input, steps_input, prompt_input],
                          outputs="text",
                          title="Baby Llama Transformer",
                          description="Run a Baby Llama transformer model by providing checkpoint, temperature, steps, and prompt inputs.")
 
 interface.launch()
+
