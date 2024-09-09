@@ -48,10 +48,10 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 ```
 
 - **`LlamaChat: interfaces`.**
-  	- **_using streamlit_**
+  	- **_using streamlit_: running Adault llama on streamlit interface**
   	![__-Llama-2-Chatbot-by-Esmail-Gumaan-and-2-more-pages-Personal-Microsoft_-Edge-2024-05-15-17-19-03](https://github.com/Esmail-ibraheem/Tinyllamas-Pytorch/assets/113830751/b52b5b68-3f5e-4cfb-9719-b0fae5fa4678)
 
- 	- **_using gradio_**
+ 	- **_using gradio_: running baby llama on gradio interface**
  	![image](https://github.com/user-attachments/assets/ff0dbf60-15f9-4855-ac40-f7d6c378b91a)
 
 	
