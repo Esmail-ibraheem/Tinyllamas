@@ -1,15 +1,15 @@
-# Xllama🦙: Extensible Language Model inspired by the original Llama model.
+# Tinyllamas🦙: Extensible Language Model inspired by the original Llama model.
  
 ![image](https://github.com/user-attachments/assets/ff0dbf60-15f9-4855-ac40-f7d6c378b91a)
 
 
 
-X-Llama is an advanced language model framework, inspired by the original Llama model but enhanced with additional features such as Grouped Query Attention (GQA), Multi-Head Attention (MHA), and more. This project aims to provide a flexible and extensible platform for experimenting with various attention mechanisms and building state-of-the-art natural language processing models.
+Tinyllamas is an advanced language model framework, inspired by the original Llama model but enhanced with additional features such as Grouped Query Attention (GQA), Multi-Head Attention (MHA), and more. This project aims to provide a flexible and extensible platform for experimenting with various attention mechanisms and building state-of-the-art natural language processing models.
 
 **_project structure:_**
-The [model](https://github.com/Esmail-ibraheem/X-Llama/blob/main/model.py) was constructed in approximately ~500 lines of code, and you have the model's [configuration](https://github.com/Esmail-ibraheem/X-Llama/blob/main/config.py).
+The [model](https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/model.py) was constructed in approximately ~500 lines of code, and you have the model's [configuration](https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/config.py).
 ```
-X-Llama/
+Tinyllamas/
 │
 ├── images/
 │
@@ -34,7 +34,7 @@ X-Llama/
    - Linear Scaling Rotary Embeddings.
    - Dynamic NTK Scaling Rotary Embeddings.
 <p align="center">
-  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/RoPE.png" alt="Your Image Description">
+  <img src="https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/images/RoPE.png" alt="Your Image Description">
 </p>
 
 ```python
@@ -46,15 +46,15 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 ```
 
 - **`LlamaChat`.**
-  	![__-Llama-2-Chatbot-by-Esmail-Gumaan-and-2-more-pages-Personal-Microsoft_-Edge-2024-05-15-17-19-03](https://github.com/Esmail-ibraheem/X-Llama/assets/113830751/b52b5b68-3f5e-4cfb-9719-b0fae5fa4678)
+  	![__-Llama-2-Chatbot-by-Esmail-Gumaan-and-2-more-pages-Personal-Microsoft_-Edge-2024-05-15-17-19-03](https://github.com/Esmail-ibraheem/Tinyllamas/assets/113830751/b52b5b68-3f5e-4cfb-9719-b0fae5fa4678)
 
 - **`Attentions:`**
   The standard practice for autoregressive decoding is to cache the keys and values of the previous tokens in the sequence to speed up attention computation. However, as the context window or batch size increases, the memory cost associated with the size of the key-value cache(kv cache) in the multi-head attention(MHA) model significantly increases.
    - **`Multi-Head Attention(MHA)`:**\
-       [Self-attention](https://github.com/Esmail-ibraheem/X-Llama/blob/main/models/transformer.py) is calculated by taking the dot product of the query and key, scaled by a factor, and applying a softmax function to obtain attention weights. These [attention](https://github.com/Esmail-ibraheem/X-Llama/blob/main/models/attentions.py) weights determine the importance of each word's value for the current word.
+       [Self-attention](https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/models/transformer.py) is calculated by taking the dot product of the query and key, scaled by a factor, and applying a softmax function to obtain attention weights. These [attention](https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/models/attentions.py) weights determine the importance of each word's value for the current word.
      $$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
        <p align="center">
-       <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA.png" alt="Your Image Description">
+       <img src="https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/images/MHA.png" alt="Your Image Description">
      </p>
 
      ---
@@ -65,7 +65,7 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
       - Fixed GQA: However, MQA may lead to a decrease in quality. In fact, we not only want fast inference but also want the quality to be on par with MHA, so Grouped-query attention(GQA) comes into play. Grouped-query attention(GQA) is an interpolation of multi-query and multi-head attention. It achieves a quality similar to multi-head attention while maintaining a comparable speed to multi-query attention.
       - `Scalable GQA:` the same as the fixed GQA but with multiple rotary embeddings.
            <p align="center">
-         <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/GQA.png" alt="Your Image Description">
+         <img src="https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/images/GQA.png" alt="Your Image Description">
        </p>
 
      **_MHA vs GQA vs MQA:_**
@@ -77,14 +77,14 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 		
 
 	<p align="center">
-	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="600" height=400">
+	  <img src="https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/images/MHA%2CGQA%2CMQA2.png" alt="Your Image Description" width="600" height=400">
 	</p>
 		 Time per sample for GQA-XXL as a function of the number of GQA groups with input length 2048 and output length 512. Going from 1 (MQA) to 8 groups adds modest inference overhead, with increasing cost to adding more groups.
 	   demonstrates the effect of the number of GQA groups on inference speed. For larger models the memory band width overhead from the KV cache is less con straining (Shazeer, 2019), while the reduction in key-value size is sharper due to the increased number of heads. As a result, increasing the number of groups from MQA only results in modest slow downs initially, with increasing cost as we move closer to MHA. We selected 8 groups as a favor able 
 		middle ground.
 
  	<p align="center">
-	  <img src="https://github.com/Esmail-ibraheem/X-Llama/blob/main/images/MHA%2CGQA%2CMQA.png" alt="Your Image Description" width="600" height=400">
+	  <img src="https://github.com/Esmail-ibraheem/Tinyllamas/blob/main/images/MHA%2CGQA%2CMQA.png" alt="Your Image Description" width="600" height=400">
 	</p>
 		 	shows how performance varies with uptraining proportion for T5 XXL with MQA and GQA. First, we note that GQA already achieves reasonable performance after conversion while MQA requires uptraining to be useful. Both MQA and GQA gain from 5% uptraining with diminishing returns from 10%.
 	
@@ -111,7 +111,7 @@ pip install pytorch transformers
 ```
 clone the repo
 ```
-git clone https://github.com/Esmail-ibraheem/X-Llama.git
+git clone https://github.com/Esmail-ibraheem/Tinyllamas.git
 ```
 run the download shell file to download the llama 2 weights 
 ```
@@ -135,10 +135,10 @@ prompts = [
 
 ## Citation:
 ```BibTex
-@misc{Gumaan2024-Xllama,
-  title   = "Xllama",
+@misc{Gumaan2024-Tinyllamas,
+  title   = "Tinyllamas",
   author  = "Gumaan, Esmail",
-  howpublished = {\url{https://github.com/Esmail-ibraheem/Xllama}},
+  howpublished = {\url{https://github.com/Esmail-ibraheem/Tinyllamas}},
   year    = "2024",
   month   = "May",
   note    = "[Online; accessed 2024-05-15]",
