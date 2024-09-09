@@ -125,7 +125,7 @@ clone the repo
 ```
 git clone https://github.com/Esmail-ibraheem/Tinyllamas.git
 ```
-run the download shell file to download the llama 2 weights 
+run the download shell file to download the llama2 weights 
 ```
 .\download.sh
 ```
@@ -141,6 +141,17 @@ prompts = [
         "Create a program that calculates the gravitational force between two objects based on their masses and distances."
         "Develop a program to simulate the behavior of ideal gases using the laws of thermodynamics."
     ]
+```
+
+### or run this single file (Tinyllama) which is a baby llama:
+first download the checkpoints from Karpathys tinysotries: 
+```
+
+```
+
+then run this command in your termianl: 
+```
+python tinyllama.py stories15M.bin 0.8 256 "dostoevsky crime and punishment"
 ```
 
 ---
