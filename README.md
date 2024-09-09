@@ -155,7 +155,7 @@ prompts = [
 ### `or using this single file (Tinyllama) which is a baby llama:`
 first download the checkpoints from Karpathys tinysotries: 
 ```
-
+wget https://huggingface.co/karpathy/tinyllamas/resolve/main/stories15M.bin
 ```
 
 then run this command in your termianl: 
