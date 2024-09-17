@@ -48,7 +48,7 @@ LLAMA_ROTARY_EMBEDDINGS_CLASSES = {
 ```
 
 - **`LlamaChat: interfaces`.**
-  	- **_using streamlit_: running Adault llama on streamlit interface**
+  	- **_using streamlit_: running adult llama on streamlit interface**
   	  	```
  		streamlit run app.py
  		```
@@ -131,7 +131,7 @@ LLAMA_ATTENTIONS_CLASSES = {
 ---
 
 ## Usage:
-### `Using the Adault llama:`
+### `Using the adult llama:`
 install the requirements libraries:
 ```
 pip install requirements
